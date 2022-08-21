@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
-import { useMoralis } from 'react-moralis'
+import { useERC20Balances, useMoralis, useNativeBalance, useTokenPrice } from 'react-moralis'
 import styles from '../styles/Sidebar.module.css'
 import BigNumber from 'big-number/big-number';
 
@@ -9,6 +9,7 @@ const Sidebar = () => {
   const [active, setActive] = useState(0);
   const { pathname } = useRouter()
   const [balance, setBalance] = useState("0")
+  const [sptBalance, setSptBalance] = useState("0")
 
   useEffect(() => {
     switch (pathname) {
@@ -23,31 +24,33 @@ const Sidebar = () => {
     }
   }, [pathname])
 
-  const { Moralis, isInitialized, web3, enableWeb3 } = useMoralis()
+  const { Moralis, isInitialized,isAuthenticated, web3, enableWeb3,account } = useMoralis()
+  const { fetchERC20Balances: getBalances, } = useERC20Balances()
 
   async function getBalance() {
     console.log("getBalance")
-    var user = await Moralis.User.currentAsync();
+    console.log(account)
+    var balances = await getBalances({
+      chain: 'mumbai',
+    })
+
+    setSptBalance(balances?.find(token => token.token_address === '0xbe1b7d3c99f480648443c0f6f542336e9eede3d9')?.balance ?? "0")
     var token = await Moralis.Web3API.account.getNativeBalance({
-      address: user.get('ethAddress'),
+      address: account,
       chain: '0x13881',
     });
     setBalance((token.balance / 10 ** 18).toFixed(2))
   }
 
   useEffect(() => {
-    if (isInitialized) {
+    if (isInitialized && isAuthenticated && account){
       getBalance()
       setTimeout(async () => {
         getBalance()
       }, 5000);
-      window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x13881" }]
-      });
     }
 
-  }, [isInitialized,])
+  }, [isInitialized,isAuthenticated, account])
 
   return (
     <div style={{ flex: 0.18 }} className={styles['sidebar-container']}>
@@ -78,7 +81,7 @@ const Sidebar = () => {
       <div className={styles['sidebar-balance-container']}>
         <div style={{ fontSize: "20px" }}>Balance</div>
         <div>{balance} MATIC</div>
-        <div>1023 SPZ</div>
+        <div>{sptBalance} SPZ</div>
       </div>
     </div>
   )

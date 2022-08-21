@@ -2,6 +2,9 @@ import Main from '../components/Layout'
 import '../styles/globals.css'
 import { MoralisProvider } from "react-moralis"
 import React from 'react'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -9,6 +12,7 @@ function MyApp({ Component, pageProps }) {
       <Main>
         <Component {...pageProps} />
       </Main>
+      <ToastContainer />
     </MoralisProvider>
   )
 }
