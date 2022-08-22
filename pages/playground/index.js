@@ -30,31 +30,9 @@ const Playground = () => {
     const [ships, setShips] = useState([]);
     const [bullets, setBullets] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser]= useState(null);
     const { isAuthenticated, isInitialized, account } = useMoralis()
     const Web3API = useMoralisWeb3Api()
     const { fetchERC20Balances } = useERC20Balances()
-
-    const token_abi = [
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "to_",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "mint",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-    ]
 
     useEffect(() => {
         if (isAuthenticated && isInitialized && account) {
@@ -106,10 +84,7 @@ const Playground = () => {
 
             contract.methods.mint(window.account, val).send({ from: admin.address, gasLimit: 71275, gasPrice: web3.utils.toWei('40', 'gwei') }).then(console.log).catch(console.log)
         }
-
-        // getActiveAccount().then(account =>
-        // minSPZTokens(val, account.address));
-    }, [user]);
+    }, []);
 
     const OnAppReady = useCallback(() => {
 

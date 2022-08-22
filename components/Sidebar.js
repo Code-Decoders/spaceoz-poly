@@ -47,7 +47,7 @@ const Sidebar = () => {
   useEffect(() => {
     if (isInitialized && isAuthenticated && account){
       getBalance()
-      setTimeout(async () => {
+      setInterval(async () => {
         getBalance();
       }, 5000);
     }
