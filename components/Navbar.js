@@ -28,25 +28,21 @@ const Navbar = () => {
             "type": "function"
         },
     ]
-    const Web3API = useMoralisWeb3Api()
 
 
-    const { runContractFunction: mint } = useWeb3Contract({
-        abi: mint_abi,
-        contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
-        functionName: "mint",
-        params: {
-            // price: BigNumber(ship.price).toString(),
-            // priceInSPT: ship.priceSPZ,
-        },
-    });
+
+    // const { runContractFunction: mint } = useWeb3Contract({
+    //     abi: mint_abi,
+    //     contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
+    //     functionName: "mint",
+    //     params: {
+    //         // price: BigNumber(ship.price).toString(),
+    //         // priceInSPT: ship.priceSPZ,
+    //     },
+    // });
 
     useEffect(() => {
         if (isAuthenticated && isWeb3Enabled) {
-            Web3API.token.getAllTokenIds({
-                address: "0x96921BDEc3B26ffCB9622921e32A39aDEe214137",
-                chain: 'mumbai'
-            }).then(console.log)
             // data.forEach(token => {
             // mint({
             //     params: {
@@ -72,11 +68,11 @@ const Navbar = () => {
 
 
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && isAuthenticated) {
             enableWeb3().then(val => {
                 switchNetwork('0x13881')
             });
-            if (isAuthenticated && user)
+            if (user)
                 setAccount(user)
         }
 

@@ -35,6 +35,7 @@ const Sidebar = () => {
     })
 
     setSptBalance(balances?.find(token => token.token_address === '0xbe1b7d3c99f480648443c0f6f542336e9eede3d9')?.balance ?? "0")
+    await new Promise(resolve => setTimeout(resolve, 1000));
     var token = await Moralis.Web3API.account.getNativeBalance({
       address: account,
       chain: '0x13881',
@@ -81,7 +82,7 @@ const Sidebar = () => {
       <div className={styles['sidebar-balance-container']}>
         <div style={{ fontSize: "20px" }}>Balance</div>
         <div>{balance} MATIC</div>
-        <div>{sptBalance} SPZ</div>
+        <div>{sptBalance} SPT</div>
       </div>
     </div>
   )

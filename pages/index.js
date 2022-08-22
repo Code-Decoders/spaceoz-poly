@@ -8,7 +8,7 @@ import Warship from '../components/Warship'
 import styles from '../styles/Home.module.css'
 import InventoryABI from '../build/contracts/SpacePolyInventory.json'
 
-const metadata = [
+export const metadata = [
   {
     id: 1,
     name: "Vanquisher",
@@ -108,7 +108,7 @@ export default function Home() {
         console.log(owners)
         if (data.type === "Warship") {
           setShips(val => {
-            val.push({...data, owners: owners})
+            val.push({ ...data, owners: owners })
             // remove duplicates from array where id is the same
             return [...new Set(val.map(item => item.id))].map(id => {
               return val.find(item => item.id === id)
@@ -117,7 +117,7 @@ export default function Home() {
         }
         else {
           setUpgrades(val => {
-            val.push({...data, owners: owners})
+            val.push({ ...data, owners: owners })
             // remove duplicates from array where id is the same
             return [...new Set(val.map(item => item.id))].map(id => {
               return val.find(item => item.id === id)
@@ -129,7 +129,41 @@ export default function Home() {
   }
 
 
-
+  const updateOwners = async (id) => {
+    if (isAuthenticated && isWeb3Enabled) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const owners_json = await Web3API.token.getTokenIdOwners({
+        chain: 'mumbai',
+        token_id: id,
+        address: "0x96921BDEc3B26ffCB9622921e32A39aDEe214137",
+      })
+      var data = metadata.find(e => e.id === id);
+      console.log(owners_json)
+      const owners = owners_json.result.map(e => e.owner_of);
+      console.log(owners)
+      if (data.type === "Warship") {
+        setShips(val => {
+          return val.map(item => {
+            if (item.id === id) {
+              return { ...item, owners: owners }
+            }
+            return item
+          }
+          )
+        })
+      }
+      else {
+        setUpgrades(val => {
+          return val.map(item => {
+            if (item.id === id) {
+              return { ...item, owners: owners }
+            }
+            return item
+          })
+        })
+      }
+    }
+  }
 
   useEffect(() => {
     getData()
@@ -142,7 +176,7 @@ export default function Home() {
           <div className={styles['horizontal-listview']}>
             {
               ships.map((val, i) => (
-                <Warship key={i} ship={val} />))
+                <Warship key={i} ship={val} updateOwner={updateOwners} />))
             }
           </div>
         </div>
@@ -161,7 +195,7 @@ export default function Home() {
           <tbody>
             {
               upgrades.map((val, i) => {
-                return <Upgrades key={i} index={i + 1} upgrade={val} />
+                return <Upgrades key={i} index={i + 1} upgrade={val} updateOwner={updateOwners} />
               })
             }
           </tbody>

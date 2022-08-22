@@ -23,3 +23,10 @@
     gap: 0 10px;
     justify-content: center;
 }
+
+.image {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  margin-right: 4px;
+}
