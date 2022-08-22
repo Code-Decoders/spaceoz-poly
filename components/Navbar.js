@@ -1,18 +1,81 @@
 import React, { useEffect } from 'react'
-import { useMoralis } from 'react-moralis'
+import { useChain, useMoralis, useMoralisWeb3Api, useTokenPrice, useWeb3Contract, useWeb3ExecuteFunction } from 'react-moralis'
 import styles from '../styles/Navbar.module.css';
+import InventoryABI from '../build/contracts/SpacePolyInventory.json';
+import BigNumber from 'bignumber.js';
+import { metadata } from '../pages';
+import { InventoryAddress, SpacePolyTokenAddress } from '../pages/_app';
 
 const Navbar = () => {
-    const { authenticate, isAuthenticated, isInitialized, logout, Moralis, authError } = useMoralis()
+    const { authenticate, isWeb3Enabled, account: user, isAuthenticated, isInitialized, logout, Moralis, authError, enableWeb3, } = useMoralis()
     const [account, setAccount] = React.useState(null)
-    useEffect(() => {
-        if (isInitialized)
-            Moralis.User.currentAsync().then(function (user) {
-                var wallet = user.get('ethAddress');
-                setAccount(wallet)
-            });
+    const { switchNetwork } = useChain()
+    const mint_abi = [
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "price",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "priceInSPT",
+                    "type": "uint256"
+                }
+            ],
+            "name": "mint",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+    ]
 
-    }, [isInitialized])
+
+
+    const { runContractFunction: mint } = useWeb3Contract();
+
+    const mint_by_owner = async () => {
+        console.log('mint by owner')
+        for (let index = 0; index < metadata.length; index++) {
+            var ship = metadata[index];
+            if (ship.id == index + 1) {
+                console.log('minting ship', ship.id)
+                var transaction = await mint({
+                    params: {
+                        abi: mint_abi,
+                        contractAddress: InventoryAddress,
+                        functionName: "mint",
+                        params: {
+                            price: BigNumber(ship.price).toString(),
+                            priceInSPT: ship.priceSPZ,
+                        },
+                    },
+                    onError: (error) => {
+                        console.log(error)
+                    },
+                    onSuccess: (result) => {
+                        console.log(result)
+                    }
+
+                })
+                // await transaction.wait()
+            }
+        }
+    }
+
+
+    useEffect(() => {
+        if (isInitialized && isAuthenticated) {
+            enableWeb3().then(val => {
+                switchNetwork('0x13881')
+            });
+            if (user)
+                setAccount(user)
+        }
+
+    }, [isInitialized, isAuthenticated, user])
+
     return (
         <div className={styles['navbar-container']}>
             <div className={styles['navbar-button']} onClick={() => {

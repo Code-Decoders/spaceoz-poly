@@ -1,14 +1,16 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useMoralis } from "react-moralis";
-import styles from "../styles/Sidebar.module.css";
-import BigNumber from "big-number/big-number";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react'
+import { useERC20Balances, useMoralis, useNativeBalance, useTokenPrice } from 'react-moralis'
+import styles from '../styles/Sidebar.module.css'
+import BigNumber from 'big-number/big-number';
+import { SpacePolyTokenAddress } from '../pages/_app';
 
 const Sidebar = () => {
   const [active, setActive] = useState(0);
-  const { pathname } = useRouter();
-  const [balance, setBalance] = useState("0");
+  const { pathname } = useRouter()
+  const [balance, setBalance] = useState("0")
+  const [sptBalance, setSptBalance] = useState("0")
 
   useEffect(() => {
     switch (pathname) {
@@ -23,61 +25,34 @@ const Sidebar = () => {
     }
   }, [pathname]);
 
-  const { Moralis, isInitialized, web3, enableWeb3 } = useMoralis();
+  const { Moralis, isInitialized,isAuthenticated, web3, enableWeb3,account } = useMoralis()
+  const { fetchERC20Balances: getBalances, } = useERC20Balances()
 
   async function getBalance() {
-    console.log("getBalance");
-    var user = await Moralis.User.currentAsync();
+    console.log("getBalance")
+    console.log(account)
+    var balances = await getBalances({
+      chain: 'mumbai',
+    })
+
+    setSptBalance(balances?.find(token => token.token_address === SpacePolyTokenAddress)?.balance ?? "0")
+    await new Promise(resolve => setTimeout(resolve, 1000));
     var token = await Moralis.Web3API.account.getNativeBalance({
-      address: user.get("ethAddress"),
-      chain: "0x13881",
+      address: account,
+      chain: '0x13881',
     });
     setBalance((token.balance / 10 ** 18).toFixed(2));
   }
 
   useEffect(() => {
-    if (isInitialized) {
-      getBalance();
+    if (isInitialized && isAuthenticated && account){
+      getBalance()
       setTimeout(async () => {
         getBalance();
       }, 5000);
-      switchNetworkMumbai();
     }
-  }, [isInitialized]);
 
-  const switchNetworkMumbai = async () => {
-    const web3 = await enableWeb3();
-
-    try {
-      await web3.currentProvider.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x13881" }],
-      });
-    } catch (error) {
-      if (error.code === 4902) {
-        try {
-          await web3.currentProvider.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: "0x13881",
-                chainName: "Mumbai",
-                rpcUrls: ["https://rpc-mumbai.matic.today"],
-                nativeCurrency: {
-                  name: "Matic",
-                  symbol: "Matic",
-                  decimals: 18,
-                },
-                blockExplorerUrls: ["https://explorer-mumbai.maticvigil.com"],
-              },
-            ],
-          });
-        } catch (error) {
-          alert(error.message);
-        }
-      }
-    }
-  };
+  }, [isInitialized,isAuthenticated, account])
 
   return (
     <div style={{ flex: 0.18 }} className={styles["sidebar-container"]}>
@@ -127,7 +102,7 @@ const Sidebar = () => {
       <div className={styles["sidebar-balance-container"]}>
         <div style={{ fontSize: "20px" }}>Balance</div>
         <div>{balance} MATIC</div>
-        <div>1023 SPZ</div>
+        <div>{sptBalance} SPT</div>
       </div>
     </div>
   );
