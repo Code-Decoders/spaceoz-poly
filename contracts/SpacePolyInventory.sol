@@ -14,7 +14,9 @@ contract SpacePolyInventory is ERC1155, Ownable {
 
     address token;
 
-    constructor() ERC1155("https://spacepoly.netlify.app/api/item/{id}.json") {}
+    constructor(address token_) ERC1155("https://spacepoly.netlify.app/api/item/{id}.json") {
+        token = token_;
+    }
 
     function updateToken(address token_) public onlyOwner {
         token = token_;
@@ -36,7 +38,7 @@ contract SpacePolyInventory is ERC1155, Ownable {
         if (_tokenPrices[token_id] == msg.value) {
             _mint(msg.sender, token_id, 1, "");
         } else {
-            SpacePolyToken(token).burn(msg.sender, _tokenPricesInSPT[token_id]);
+            SpacePolyToken(token).burnFrom(msg.sender, _tokenPricesInSPT[token_id]);
             _mint(msg.sender, token_id, 1, "");
         }
     }
