@@ -81,7 +81,7 @@ export default function Home() {
   const [ships, setShips] = React.useState([])
   const [upgrades, setUpgrades] = React.useState([])
   const Web3API = useMoralisWeb3Api()
-  const { isInitialized, isWeb3Enabled, enableWeb3 } = useMoralis()
+  const { isInitialized,isAuthenticated, isWeb3Enabled, enableWeb3 } = useMoralis()
 
   
 
