@@ -28,7 +28,7 @@ Live Website (https://spaceoz-poly-4qas0q.spheron.app/) deployed using Spheron
 
 Youtube Video Demo
 
-[![Youtube Video](https://i.imgur.com/FwOohGE.png)](https://youtu.be/onvs27YylLY)
+[![Youtube Video](https://img.youtube.com/vi/7LX2aEoyXFc/sddefault.jpg)](https://youtu.be/7LX2aEoyXFc)
 
 
 
