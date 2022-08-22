@@ -81,12 +81,12 @@ export default function Home() {
   const [ships, setShips] = React.useState([])
   const [upgrades, setUpgrades] = React.useState([])
   const Web3API = useMoralisWeb3Api()
-  const { isAuthenticated, isWeb3Enabled } = useMoralis()
+  const { isInitialized, isWeb3Enabled, enableWeb3 } = useMoralis()
 
   
 
   const getData = async () => {
-    if (isAuthenticated && isWeb3Enabled) {
+    if (isInitialized && isWeb3Enabled) {
       console.log("getData")
       const json = await Web3API.token.getAllTokenIds({
         address: InventoryAddress,
@@ -169,8 +169,11 @@ export default function Home() {
   }
 
   useEffect(() => {
+    if (!isWeb3Enabled) {
+      enableWeb3()
+    }
     getData()
-  }, [isAuthenticated, isWeb3Enabled])
+  }, [isInitialized, isWeb3Enabled])
   return (
     <div className={styles['home-container']}>
       <div style={{ padding: "2rem" }}>
