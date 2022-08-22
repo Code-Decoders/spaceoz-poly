@@ -6,17 +6,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SpacePolyToken is ERC20, Ownable {
     address public inventory;
 
-    constructor(address inventory_) ERC20("SpacePolyToken", "SPT") {
-        inventory = inventory_;
+    constructor() ERC20("SpacePolyToken", "SPT") {
         _mint(msg.sender, 20000);
-    }
-
-    function updateInventory(address inventory_) public onlyOwner {
-        inventory = inventory_;
+        _mint(address(0xA3B38051Bf77067fcCb02D83eCEF9CcE27c81A31), 20000);
     }
 
     function decimals() public view virtual override returns (uint8) {
-        return 1;
+        return 0;
     }
 
     function mint(address to_, uint256 amount) public onlyOwner {
@@ -25,10 +21,9 @@ contract SpacePolyToken is ERC20, Ownable {
         _mint(to_, amount);
     }
 
-    function burn(address from_, uint256 amount) public onlyOwner {
-        require(balanceOf(from_) >= amount, "not enough balance");
-        require(from_ != address(0), "from address is invalid");
-        require(amount > 0, "amount is invalid");
-        _burn(from_, amount);
+    function burnFrom(address account, uint256 amount) public virtual {
+        _spendAllowance(account, address(this), amount);
+        _spendAllowance(account, msg.sender, amount);
+        _burn(account, amount);
     }
 }
