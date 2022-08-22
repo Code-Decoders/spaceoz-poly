@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useMoralis, useWeb3Contract } from 'react-moralis'
 import { toast } from 'react-toastify'
+import { InventoryAddress } from '../pages/_app'
 import styles from '../styles/Upgrades.module.css'
 
 const Upgrades = ({ upgrade, index, updateOwner }) => {
@@ -46,7 +47,7 @@ const Upgrades = ({ upgrade, index, updateOwner }) => {
             var transaction = await mint_existing({
                 params: {
                     abi: mint_existing_abi,
-                    contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
+                    contractAddress: InventoryAddress,
                     functionName: "mint",
                     msgValue: Moralis.Units.ETH(upgrade.price / 10 ** 18),
                     params: {
@@ -77,7 +78,7 @@ const Upgrades = ({ upgrade, index, updateOwner }) => {
             var transaction = await mint_existing({
                 params: {
                     abi: mint_existing_abi,
-                    contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
+                    contractAddress: InventoryAddress,
                     functionName: "mint",
                     msgValue: Moralis.Units.ETH(0),
                     params: {

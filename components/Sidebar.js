@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useERC20Balances, useMoralis, useNativeBalance, useTokenPrice } from 'react-moralis'
 import styles from '../styles/Sidebar.module.css'
 import BigNumber from 'big-number/big-number';
+import { SpacePolyTokenAddress } from '../pages/_app';
 
 const Sidebar = () => {
   const [active, setActive] = useState(0);
@@ -34,7 +35,7 @@ const Sidebar = () => {
       chain: 'mumbai',
     })
 
-    setSptBalance(balances?.find(token => token.token_address === '0xbe1b7d3c99f480648443c0f6f542336e9eede3d9')?.balance ?? "0")
+    setSptBalance(balances?.find(token => token.token_address === SpacePolyTokenAddress)?.balance ?? "0")
     await new Promise(resolve => setTimeout(resolve, 1000));
     var token = await Moralis.Web3API.account.getNativeBalance({
       address: account,

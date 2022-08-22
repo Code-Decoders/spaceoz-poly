@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useERC20Balances, useMoralis, useMoralisWeb3Api } from 'react-moralis';
 import { Unity, useUnityContext } from 'react-unity-webgl';
+import Web3 from 'web3';
 import { metadata } from '..';
+import { InventoryAddress, SpacePolyTokenAddress } from '../_app';
+import TokenABI from '../../build/contracts/SpacePolyToken.json'
 
 const Playground = () => {
 
@@ -27,13 +30,36 @@ const Playground = () => {
     const [ships, setShips] = useState([]);
     const [bullets, setBullets] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [user, setUser]= useState(null);
     const { isAuthenticated, isInitialized, account } = useMoralis()
     const Web3API = useMoralisWeb3Api()
     const { fetchERC20Balances } = useERC20Balances()
 
+    const token_abi = [
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "to_",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "mint",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+    ]
+
     useEffect(() => {
         if (isAuthenticated && isInitialized && account) {
             getData();
+            window.account = account;
         }
     }, [isAuthenticated, isInitialized, account]);
 
@@ -41,7 +67,7 @@ const Playground = () => {
         setLoading(true);
         var result = await Web3API.account.getNFTsForContract({
             chain: 'mumbai',
-            token_address: "0x96921BDEc3B26ffCB9622921e32A39aDEe214137",
+            token_address: InventoryAddress,
             address: account,
         })
         var ids = result.result.map(e => parseInt(e.token_id));
@@ -62,19 +88,38 @@ const Playground = () => {
         setLoading(false);
     };
 
+    useEffect(() => {
+        if (isAuthenticated && isInitialized) {
+        }
+    }, [isAuthenticated, isInitialized])
+
     const handleCoins = useCallback((val) => {
-        console.log(val)
+        console.log(val, window.account)
+        if (window.account) {
+            const web3 = new Web3(process.env.NEXT_PUBLIC_RPC_URL)
+            const privateKey = process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY;
+            
+            const admin = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
+            web3.eth.accounts.wallet.add(admin);
+            web3.eth.defaultAccount = admin.address;
+            const contract = new web3.eth.Contract(TokenABI.abi, SpacePolyTokenAddress)
+
+            contract.methods.mint(window.account, val).send({ from: admin.address, gasLimit: 71275, gasPrice: web3.utils.toWei('40', 'gwei') }).then(console.log).catch(console.log)
+        }
+
         // getActiveAccount().then(account =>
         // minSPZTokens(val, account.address));
-    }, []);
+    }, [user]);
 
     const OnAppReady = useCallback(() => {
+
         sendMessage("Coins", "GetUserCoins", coins);
         sendMessage("Coins", "GetShips", ships.join(","));
         sendMessage("Coins", "GetBullets", bullets.join(","));
     }, [sendMessage]);
 
     useEffect(() => {
+
         addEventListener("MintTokens", handleCoins);
         addEventListener("OnAppReady", OnAppReady);
         return () => {

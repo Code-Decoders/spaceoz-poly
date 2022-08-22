@@ -5,6 +5,7 @@ import { useMoralis, useWeb3Contract, useWeb3ExecuteFunction } from 'react-moral
 import BigNumber from 'bignumber.js';
 import Inventory from '../build/contracts/SpacePolyToken.json'
 import { toast } from 'react-toastify';
+import { InventoryAddress } from '../pages/_app';
 
 const Warship = ({ ship, updateOwner }) => {
 
@@ -50,7 +51,7 @@ const Warship = ({ ship, updateOwner }) => {
             var transaction = await mint_existing({
                 params: {
                     abi: mint_existing_abi,
-                    contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
+                    contractAddress: InventoryAddress,
                     functionName: "mint",
                     msgValue: Moralis.Units.ETH(ship.price / 10 ** 18),
                     params: {
@@ -78,7 +79,7 @@ const Warship = ({ ship, updateOwner }) => {
             var transaction = await mint_existing({
                 params: {
                     abi: mint_existing_abi,
-                    contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
+                    contractAddress: InventoryAddress,
                     functionName: "mint",
                     msgValue: Moralis.Units.ETH(0),
                     params: {

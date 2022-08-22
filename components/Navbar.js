@@ -3,6 +3,8 @@ import { useChain, useMoralis, useMoralisWeb3Api, useTokenPrice, useWeb3Contract
 import styles from '../styles/Navbar.module.css';
 import InventoryABI from '../build/contracts/SpacePolyInventory.json';
 import BigNumber from 'bignumber.js';
+import { metadata } from '../pages';
+import { InventoryAddress, SpacePolyTokenAddress } from '../pages/_app';
 
 const Navbar = () => {
     const { authenticate, isWeb3Enabled, account: user, isAuthenticated, isInitialized, logout, Moralis, authError, enableWeb3, } = useMoralis()
@@ -31,40 +33,36 @@ const Navbar = () => {
 
 
 
-    // const { runContractFunction: mint } = useWeb3Contract({
-    //     abi: mint_abi,
-    //     contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
-    //     functionName: "mint",
-    //     params: {
-    //         // price: BigNumber(ship.price).toString(),
-    //         // priceInSPT: ship.priceSPZ,
-    //     },
-    // });
+    const { runContractFunction: mint } = useWeb3Contract();
 
-    useEffect(() => {
-        if (isAuthenticated && isWeb3Enabled) {
-            // data.forEach(token => {
-            // mint({
-            //     params: {
-            //         abi: mint_abi,
-            //         contractAddress: '0x96921BDEc3B26ffCB9622921e32A39aDEe214137',
-            //         functionName: "mint",
-            //         params: {
-            //             price: BigNumber(token.price).toString(),
-            //             priceInSPT: token.priceSPZ,
-            //         },
-            //     },
-            //     onError: (error) => {
-            //         console.log(error)
-            //     },
-            //     onSuccess: (result) => {
-            //         console.log(result)
-            //     }
+    const mint_by_owner = async () => {
+        console.log('mint by owner')
+        for (let index = 0; index < metadata.length; index++) {
+            var ship = metadata[index];
+            if (ship.id == index + 1) {
+                console.log('minting ship', ship.id)
+                var transaction = await mint({
+                    params: {
+                        abi: mint_abi,
+                        contractAddress: InventoryAddress,
+                        functionName: "mint",
+                        params: {
+                            price: BigNumber(ship.price).toString(),
+                            priceInSPT: ship.priceSPZ,
+                        },
+                    },
+                    onError: (error) => {
+                        console.log(error)
+                    },
+                    onSuccess: (result) => {
+                        console.log(result)
+                    }
 
-            // })
-            // })
+                })
+                // await transaction.wait()
+            }
         }
-    }, [isAuthenticated, isWeb3Enabled])
+    }
 
 
     useEffect(() => {

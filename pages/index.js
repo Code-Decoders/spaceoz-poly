@@ -7,6 +7,7 @@ import Upgrades from '../components/Upgrades'
 import Warship from '../components/Warship'
 import styles from '../styles/Home.module.css'
 import InventoryABI from '../build/contracts/SpacePolyInventory.json'
+import { InventoryAddress } from './_app'
 
 export const metadata = [
   {
@@ -82,11 +83,13 @@ export default function Home() {
   const Web3API = useMoralisWeb3Api()
   const { isAuthenticated, isWeb3Enabled } = useMoralis()
 
+  
+
   const getData = async () => {
     if (isAuthenticated && isWeb3Enabled) {
       console.log("getData")
       const json = await Web3API.token.getAllTokenIds({
-        address: "0x96921BDEc3B26ffCB9622921e32A39aDEe214137",
+        address: InventoryAddress,
         chain: 'mumbai'
       })
 
@@ -94,7 +97,7 @@ export default function Home() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       const owners_json = await Web3API.token.getNFTOwners({
         chain: 'mumbai',
-        address: "0x96921BDEc3B26ffCB9622921e32A39aDEe214137",
+        address: InventoryAddress,
       })
       console.log(owners_json)
       for (const key in ids) {
@@ -135,7 +138,7 @@ export default function Home() {
       const owners_json = await Web3API.token.getTokenIdOwners({
         chain: 'mumbai',
         token_id: id,
-        address: "0x96921BDEc3B26ffCB9622921e32A39aDEe214137",
+        address: InventoryAddress,
       })
       var data = metadata.find(e => e.id === id);
       console.log(owners_json)
