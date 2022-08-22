@@ -15,13 +15,13 @@
 }
 
 .center {
-    text-align: center;
+  text-align: center;
 }
 
 .action-bar {
-    display: flex;
-    gap: 0 10px;
-    justify-content: center;
+  display: flex;
+  gap: 0 10px;
+  justify-content: center;
 }
 
 .image {
@@ -29,4 +29,6 @@
   height: 30px;
   object-fit: cover;
   margin-right: 4px;
+  display: inline;
+  vertical-align: middle;
 }
