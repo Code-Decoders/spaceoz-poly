@@ -76,7 +76,7 @@ const Playground = () => {
         if (window.account) {
             const web3 = new Web3(process.env.NEXT_PUBLIC_RPC_URL)
             const privateKey = process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY;
-            
+
             const admin = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
             web3.eth.accounts.wallet.add(admin);
             web3.eth.defaultAccount = admin.address;
@@ -110,6 +110,13 @@ const Playground = () => {
 
     return (
         <div>
+            {isLoaded === false && (
+                // We'll conditionally render the loading overlay if the Unity
+                // Application is not loaded.
+                <div className="loading-overlay">
+                    <p>Loading... ({loadingPercentage}%)</p>
+                </div>
+            )}
             {!loading && (
                 <Unity
                     className="unity"
